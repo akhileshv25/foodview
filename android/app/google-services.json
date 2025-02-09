@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "953483459664",
+    "project_id": "ar-foodview",
+    "storage_bucket": "ar-foodview.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953483459664:android:f7d27ca2d2375e76242555",
+        "android_client_info": {
+          "package_name": "com.ar.foodview"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuLOZrojO7nG3EA3iKbAvbEiwKM6lDvps"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
