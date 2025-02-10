@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:foodview/provider/favorite_provider.dart';
 import 'package:foodview/utils/color.dart';
+import 'package:iconsax/iconsax.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
@@ -57,29 +58,31 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                         return Stack(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(15),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 15),
                               child: Container(
                                 padding: const EdgeInsets.all(10),
                                 width: double.infinity,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
-                                    color: white),
+                                    color: gray300),
                                 child: Row(
                                   children: [
                                     Container(
                                       width: 100,
                                       height: 80,
                                       decoration: BoxDecoration(
-                                        color: white,
+                                        color: gray300,
                                         borderRadius: BorderRadius.circular(20),
                                         image: DecorationImage(
+                                          fit: BoxFit.cover,
                                           image: NetworkImage(
                                             favoriteItem['image'],
                                           ),
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 15,
                                     ),
                                     Column(
@@ -88,20 +91,71 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                       children: [
                                         Text(
                                           favoriteItem['name'],
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 5,
                                         ),
                                         Row(
-                                          children: [],
-                                        )
+                                          children: [
+                                            const Icon(
+                                              Iconsax.flash_1,
+                                              size: 16,
+                                              color: black,
+                                            ),
+                                            Text(
+                                              "${favoriteItem['cal']}Cal",
+                                              style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: black),
+                                            ),
+                                            const Text(
+                                              " . ",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: black,
+                                              ),
+                                            ),
+                                            const Icon(
+                                              Iconsax.wallet_1,
+                                              size: 16,
+                                              color: black,
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text(
+                                              "₹${favoriteItem['time']}",
+                                              style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: black),
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ],
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 40,
+                              right: 35,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    provider.toggleFavorite(favoriteItem);
+                                  });
+                                },
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: deepPurple,
+                                  size: 25,
                                 ),
                               ),
                             ),
