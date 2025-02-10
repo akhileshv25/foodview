@@ -5,6 +5,7 @@ import 'package:foodview/screens/notify_icon.dart';
 import 'package:foodview/utils/color.dart';
 import 'package:foodview/widgets/food_item.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 class FoodScreen extends StatefulWidget {
   final DocumentSnapshot<Object?> documentSnapshot;
@@ -28,18 +29,18 @@ class _FoodScreenState extends State<FoodScreen> {
           children: [
             Stack(
               children: [
-                Hero(
-                  tag: widget.documentSnapshot['image'],
-                  child: Container(
-                    height: MediaQuery.of(context).size.height / 2.1,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          widget.documentSnapshot['image'],
-                        ),
-                      ),
-                    ),
+                Container(
+                  height: MediaQuery.of(context).size.height / 2.1,
+                  child: const ModelViewer(
+                    backgroundColor: gray400,
+                    src:
+                        'https://firebasestorage.googleapis.com/v0/b/ardemo-70dc1.appspot.com/o/CharModel%2Fpink_rose.glb?alt=media&token=2ca1a7f5-8541-4da1-98f6-3c3d4645f35d',
+                    alt: 'A 3D food model',
+                    ar: true,
+                    autoRotate: true,
+                    // iosSrc: widget.documentSnapshot['ios_model_url'],
+                    disableZoom: false,
+                    debugLogging: false,
                   ),
                 ),
                 Positioned(
@@ -54,7 +55,7 @@ class _FoodScreenState extends State<FoodScreen> {
                           Navigator.pop(context);
                         },
                       ),
-                      const Spacer(),
+                      Spacer(),
                       NotifyIcon(
                         icon: Iconsax.notification,
                         pressed: () {},
@@ -63,19 +64,20 @@ class _FoodScreenState extends State<FoodScreen> {
                   ),
                 ),
                 Positioned(
-                    left: 0,
-                    right: 0,
-                    top: MediaQuery.of(context).size.width,
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ))
+                  left: 0,
+                  right: 0,
+                  top: MediaQuery.of(context).size.width,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                )
               ],
-            ),
+            )
           ],
         ),
       ),
