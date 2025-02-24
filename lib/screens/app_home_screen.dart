@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:foodview/provider/auth_provider.dart';
 import 'package:foodview/screens/notify_icon.dart';
 import 'package:foodview/screens/view_item.dart';
+import 'package:foodview/screens/welcome_screen.dart';
 import 'package:foodview/utils/color.dart';
 import 'package:foodview/widgets/banner.dart';
 import 'package:foodview/widgets/food_item.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
 class AppHomeScreen extends StatefulWidget {
   const AppHomeScreen({super.key});
@@ -16,16 +19,20 @@ class AppHomeScreen extends StatefulWidget {
 
 class _AppHomeScreenState extends State<AppHomeScreen> {
   String category = "All";
-  final CollectionReference categoryItems =
-      FirebaseFirestore.instance.collection("food_category");
 
-  Query get filteredFood => FirebaseFirestore.instance
-      .collection("food_data")
-      .where('category', isEqualTo: category);
-  Query get allFood => FirebaseFirestore.instance.collection("food_data");
-  Query get selectedFood => category == "All" ? allFood : filteredFood;
   @override
   Widget build(BuildContext context) {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+    final CollectionReference categoryItems =
+        FirebaseFirestore.instance.collection("food_category");
+
+    Query filteredFood = FirebaseFirestore.instance
+        .collection("food_data")
+        .where('category', isEqualTo: category);
+
+    Query allFood = FirebaseFirestore.instance.collection("food_data");
+    Query selectedFood = category == "All" ? allFood : filteredFood;
+
     return Scaffold(
       backgroundColor: white,
       body: SafeArea(
@@ -34,13 +41,11 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Header(),
+                    Header(ap),
                     SearchBar(),
                     const BannerCarousel(),
                     const Padding(
@@ -53,63 +58,37 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
                         ),
                       ),
                     ),
-                    Categories(),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Quick & Easy",
-                          style: TextStyle(
-                            fontSize: 15,
-                            letterSpacing: 0.1,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ViewItem(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            "View All",
-                            style: TextStyle(
-                                color: deepPurple, fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ],
-                    )
+                    Categories(categoryItems),
                   ],
                 ),
               ),
-              StreamBuilder(
-                  stream: selectedFood.snapshots(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      final List<DocumentSnapshot> food =
-                          snapshot.data?.docs ?? [];
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 5, left: 15),
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: food
-                                .map((e) => FoodItem(documentSnapshot: e))
-                                .toList(),
-                          ),
-                        ),
-                      );
-                    }
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }),
+
+              /// Food Sections
+              FoodCategorySection(title: "Quick & Easy", query: selectedFood),
+              FoodCategorySection(
+                title: "Breakfast",
+                query: FirebaseFirestore.instance
+                    .collection("food_data")
+                    .where('category', isEqualTo: "Breakfast"),
+              ),
+              FoodCategorySection(
+                title: "Lunch",
+                query: FirebaseFirestore.instance
+                    .collection("food_data")
+                    .where('category', isEqualTo: "Lunch"),
+              ),
+              FoodCategorySection(
+                title: "Dinner",
+                query: FirebaseFirestore.instance
+                    .collection("food_data")
+                    .where('category', isEqualTo: "Dinner"),
+              ),
+              FoodCategorySection(
+                title: "Drinks",
+                query: FirebaseFirestore.instance
+                    .collection("food_data")
+                    .where('category', isEqualTo: "Drinks"),
+              ),
             ],
           ),
         ),
@@ -117,7 +96,9 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
     );
   }
 
-  StreamBuilder<QuerySnapshot<Object?>> Categories() {
+  /// Food Category Section Widget
+  StreamBuilder<QuerySnapshot<Object?>> Categories(
+      CollectionReference categoryItems) {
     return StreamBuilder(
       stream: categoryItems.snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
@@ -167,6 +148,7 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
     );
   }
 
+  /// Search Bar Widget
   Padding SearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 22),
@@ -195,7 +177,8 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
     );
   }
 
-  Row Header() {
+  /// Header Widget
+  Row Header(AuthProvider ap) {
     return Row(
       children: [
         const Text(
@@ -208,8 +191,84 @@ class _AppHomeScreenState extends State<AppHomeScreen> {
         ),
         const Spacer(),
         NotifyIcon(
-          icon: Iconsax.notification,
-          pressed: () {},
+          icon: Iconsax.logout,
+          pressed: () {
+            ap.userSignOut().then(
+                  (value) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WelcomeScreen(),
+                    ),
+                  ),
+                );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/// Reusable Section Widget for Different Food Categories
+class FoodCategorySection extends StatelessWidget {
+  final String title;
+  final Query query;
+
+  const FoodCategorySection(
+      {super.key, required this.title, required this.query});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ViewItem(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  "View All",
+                  style:
+                      TextStyle(color: deepPurple, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+        ),
+        StreamBuilder(
+          stream: query.snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasData) {
+              final List<DocumentSnapshot> food = snapshot.data?.docs ?? [];
+              return Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children:
+                        food.map((e) => FoodItem(documentSnapshot: e)).toList(),
+                  ),
+                ),
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
         ),
       ],
     );

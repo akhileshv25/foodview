@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ar_plugin/flutter_ar_plugin.dart';
 import 'package:foodview/provider/favorite_provider.dart';
 import 'package:foodview/screens/notify_icon.dart';
 import 'package:foodview/utils/color.dart';
-import 'package:foodview/widgets/food_item.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
@@ -16,6 +16,22 @@ class FoodScreen extends StatefulWidget {
 }
 
 class _FoodScreenState extends State<FoodScreen> {
+  bool _isLoading = true;
+
+  // Simulate model loading
+  Future<void> _loadModel() async {
+    await Future.delayed(const Duration(seconds: 3)); // Simulate delay
+    setState(() {
+      _isLoading = false; // Model is loaded
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadModel(); // Start loading the model on init
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = FavoriteProvider.of(context);
@@ -24,62 +40,75 @@ class _FoodScreenState extends State<FoodScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: bottumButtonAndIcon(provider),
       backgroundColor: white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height / 2.1,
-                  child: const ModelViewer(
-                    backgroundColor: gray400,
-                    src:
-                        'https://firebasestorage.googleapis.com/v0/b/ardemo-70dc1.appspot.com/o/CharModel%2Fpink_rose.glb?alt=media&token=2ca1a7f5-8541-4da1-98f6-3c3d4645f35d',
-                    alt: 'A 3D food model',
-                    ar: true,
-                    autoRotate: true,
-                    // iosSrc: widget.documentSnapshot['ios_model_url'],
-                    disableZoom: false,
-                    debugLogging: false,
-                  ),
-                ),
-                Positioned(
-                  top: 40,
-                  left: 10,
-                  right: 10,
-                  child: Row(
-                    children: [
-                      NotifyIcon(
-                        icon: Icons.arrow_back_ios_new,
-                        pressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      Spacer(),
-                      NotifyIcon(
-                        icon: Iconsax.notification,
-                        pressed: () {},
-                      ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: MediaQuery.of(context).size.width,
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: white,
-                      borderRadius: BorderRadius.circular(20),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height / 2.1,
+                    child: ModelViewer(
+                      backgroundColor: gray400,
+                      src: widget.documentSnapshot['model_url'],
+                      alt: 'A 3D food model',
+                      ar: false,
+                      autoRotate: true,
+                      iosSrc: widget.documentSnapshot['ios_model_url'],
+                      disableZoom: false,
+                      debugLogging: true,
+                      loading: Loading.eager, // Load model immediately
                     ),
                   ),
-                )
+
+                  // Show loader while the model is loading
+                  if (_isLoading)
+                    const Positioned(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(
+                            strokeWidth: 6,
+                            color: Colors.deepPurple,
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Loading...",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+          Positioned(
+            top: 40,
+            left: 10,
+            right: 10,
+            child: Row(
+              children: [
+                NotifyIcon(
+                  icon: Icons.arrow_back_ios_new,
+                  pressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                const Spacer(),
+                NotifyIcon(
+                  icon: Iconsax.notification,
+                  pressed: () {},
+                ),
               ],
-            )
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -98,9 +127,16 @@ class _FoodScreenState extends State<FoodScreen> {
                   const EdgeInsets.symmetric(horizontal: 100, vertical: 10),
               foregroundColor: white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              FlutterArPlugin.launchARView(
+                modelUrl: widget.documentSnapshot['model_url'],
+                imageUrl:
+                    "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Furniture%2Fqr.jpeg?alt=media&token=b39cb577-6f5e-42b6-8172-c2194da5ec27",
+                scaleFactor: 10.0, // Adjust the scale as needed
+              );
+            },
             child: const Text(
-              "Tast it!!!",
+              "Taste it!!!",
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,

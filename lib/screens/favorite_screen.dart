@@ -28,7 +28,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         ),
         body: favoriteItems.isEmpty
             ? const Center(
-                child: const Text(
+                child: Text(
                   "NO Favorites yet",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
@@ -129,7 +129,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                               width: 5,
                                             ),
                                             Text(
-                                              "₹${favoriteItem['time']}",
+                                              "₹${favoriteItem['rate']}",
                                               style: const TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.bold,

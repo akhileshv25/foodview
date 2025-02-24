@@ -58,5 +58,7 @@
 	</array>
 	<key>io.flutter.embedded_views_preview</key>
   	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This application requires camera access for augmented reality functionality.</string>
 </dict>
 </plist>

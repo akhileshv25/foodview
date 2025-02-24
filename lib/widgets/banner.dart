@@ -13,17 +13,17 @@ class _BannerCarouselState extends State<BannerCarousel> {
   final List<Map<String, String>> banners = [
     {
       "image":
-          "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Food%2FPizza.png?alt=media&token=cc19d922-e848-40da-88fd-a6bb4e5796be",
+          "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Food%2FPizza-removebg-preview.png?alt=media&token=6c5c6838-2222-447a-a8af-b195dea825da",
       "text": "Delicious Pizza \nJust for You!"
     },
     {
       "image":
-          "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Food%2FPizza.png?alt=media&token=cc19d922-e848-40da-88fd-a6bb4e5796be",
+          "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Food%2FPizza-removebg-preview.png?alt=media&token=6c5c6838-2222-447a-a8af-b195dea825da",
       "text": "Tasty Burgers,\n Made Fresh!"
     },
     {
       "image":
-          "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Food%2FPizza.png?alt=media&token=cc19d922-e848-40da-88fd-a6bb4e5796be",
+          "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Food%2FPizza-removebg-preview.png?alt=media&token=6c5c6838-2222-447a-a8af-b195dea825da",
       "text": "Authentic Pasta,\n Rich Flavors!"
     },
   ];

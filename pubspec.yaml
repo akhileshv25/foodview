@@ -45,7 +45,7 @@ dependencies:
   iconsax: ^0.0.8
   carousel_slider: ^5.0.0
   model_viewer_plus: ^1.9.1
-
+  flutter_ar_plugin: ^0.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

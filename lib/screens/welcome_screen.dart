@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodview/provider/auth_provider.dart';
-import 'package:foodview/screens/home_screen.dart';
+import 'package:foodview/screens/main_screen.dart';
 import 'package:foodview/screens/register_screen.dart';
 import 'package:foodview/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
@@ -60,7 +60,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             () => Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const HomeScreen(),
+                                builder: (context) => const MainScreen(),
                               ),
                             ),
                           );

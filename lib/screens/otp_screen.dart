@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodview/model/user_model.dart';
 import 'package:foodview/provider/auth_provider.dart';
-import 'package:foodview/screens/home_screen.dart';
+import 'package:foodview/screens/main_screen.dart';
 import 'package:foodview/utils/utils.dart';
 import 'package:foodview/widgets/custom_button.dart';
 import 'package:pinput/pinput.dart';
@@ -161,7 +161,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 (value) => Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const HomeScreen(),
+                                      builder: (context) => const MainScreen(),
                                     ),
                                     (route) => false),
                               ),
@@ -203,7 +203,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const HomeScreen(),
+                    builder: (context) => const MainScreen(),
                   ),
                   (route) => false,
                 );

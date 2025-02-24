@@ -37,6 +37,13 @@
 </head>
 
 <body>
+  <script>
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+      console.log("Camera access granted!");
+    }).catch(function (error) {
+      console.error("Camera access denied: ", error);
+    });
+  </script>
 
 
   <script src="flutter_bootstrap.js" async></script>

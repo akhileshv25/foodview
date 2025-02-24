@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:foodview/provider/auth_provider.dart';
 import 'package:foodview/provider/favorite_provider.dart';
-import 'package:foodview/screens/main_screen.dart';
 import 'package:foodview/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: MainScreen(),
+        home: WelcomeScreen(),
         title: "FlutterPhoneAuth",
       ),
     );

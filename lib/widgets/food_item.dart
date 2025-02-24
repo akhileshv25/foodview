@@ -32,18 +32,15 @@ class FoodItem extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Hero(
-                  tag: documentSnapshot['image'],
-                  child: Container(
-                    width: double.infinity,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          documentSnapshot['image'],
-                        ),
+                Container(
+                  width: double.infinity,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: NetworkImage(
+                        documentSnapshot['image'],
                       ),
                     ),
                   ),
@@ -89,7 +86,7 @@ class FoodItem extends StatelessWidget {
                       width: 5,
                     ),
                     Text(
-                      "₹${documentSnapshot['time']}",
+                      "₹${documentSnapshot['rate']}",
                       style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
