@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodview/screens/CartScreen.dart';
 import 'package:foodview/screens/app_home_screen.dart';
 import 'package:foodview/screens/favorite_screen.dart';
+import 'package:foodview/screens/profile_screen.dart';
 import 'package:foodview/utils/color.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -19,8 +22,9 @@ class _MainScreenState extends State<MainScreen> {
     page = [
       const AppHomeScreen(),
       const FavoriteScreen(),
-      navBarPage(Iconsax.calendar),
-      navBarPage(Iconsax.user),
+      const CartScreen(),
+      // navBarPage(Iconsax.calendar),
+      const ProfilePage(),
     ];
     super.initState();
   }
@@ -63,9 +67,9 @@ class _MainScreenState extends State<MainScreen> {
                 label: "Favorite"),
             BottomNavigationBarItem(
                 icon: Icon(
-                  selectedIndex == 2 ? Iconsax.calendar5 : Iconsax.calendar,
+                  selectedIndex == 2 ? Icons.shopping_cart : Icons.shopping_cart_outlined,
                 ),
-                label: "Meal Plan"),
+                label: "Cart"),
             BottomNavigationBarItem(
                 icon: Icon(
                   selectedIndex == 3 ? Iconsax.user : Iconsax.user,

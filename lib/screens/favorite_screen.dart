@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:foodview/provider/favorite_provider.dart';
+import 'package:foodview/utils/cart_items.dart';
 import 'package:foodview/utils/color.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -143,6 +144,34 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                 ),
                               ),
                             ),
+
+                            Positioned(
+  top: 40,
+  right: 75, // Adjust position to be beside delete button
+  child: GestureDetector(
+    onTap: () {
+      setState(() {
+        cartItems.add({
+          'name': favoriteItem['name'],
+          'calories': favoriteItem['cal'],
+          'quantity': 1, // Default quantity
+          'price': favoriteItem['rate'],
+          'image': favoriteItem['image'],
+        });
+        saveCart(); // Save to SharedPreferences
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Added to Cart")),
+        );
+      });
+    },
+    child: const Icon(
+      Iconsax.add_square,
+      color: deepPurple,
+      size: 25,
+    ),
+  ),
+),
+
                             Positioned(
                               top: 40,
                               right: 35,
