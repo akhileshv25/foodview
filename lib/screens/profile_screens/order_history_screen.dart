@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:foodview/utils/bill_generator.dart';
 import 'package:intl/intl.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
@@ -120,7 +121,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         ),
       ],
     ),
-    if (order['status'] == "pending") // Show Pay Now button only if status is pending
+    // Conditional Buttons Based on Status
+    if (order['status'] == "pending") // Show Pay Now button only if pending
       ElevatedButton(
         onPressed: () {
           // Implement your payment logic here
@@ -134,9 +136,26 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           ),
         ),
         child: const Text("Pay Now", style: TextStyle(fontSize: 12)),
+      )
+    else if (order['status'] == "completed") // Show Generate Bill button if completed
+      ElevatedButton(
+        onPressed: () {
+          generateBill(order);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: const Text("Bill", style: TextStyle(fontSize: 12)),
       ),
   ],
 ),
+
+
 
 
                             const Divider(),
