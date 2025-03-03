@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 class NotifyIcon extends StatelessWidget {
   final IconData icon;
   final VoidCallback pressed;
-  const NotifyIcon({super.key, required this.icon, required this.pressed});
+  final Color? color; // Optional color parameter
+
+  const NotifyIcon({
+    super.key,
+    required this.icon,
+    required this.pressed,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +23,7 @@ class NotifyIcon extends StatelessWidget {
         fixedSize: const Size(50, 50),
       ),
       onPressed: pressed,
-      icon: Icon(icon),
+      icon: Icon(icon, color: color),
     );
   }
 }

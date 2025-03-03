@@ -83,8 +83,7 @@ String getCurrentUserId() {
     final provider = FavoriteProvider.of(context);
 
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: bottumButtonAndIcon(provider),
+      
       backgroundColor: white,
       body: Stack(
         children: [
@@ -93,7 +92,7 @@ String getCurrentUserId() {
               Stack(
                 alignment: Alignment.center,
                 children: [
-                  Container(
+                  SizedBox(
                     height: MediaQuery.of(context).size.height / 2.1,
                     child: ModelViewer(
                       backgroundColor: gray400,
@@ -131,12 +130,14 @@ String getCurrentUserId() {
                       ),
                     ),
                 ],
+                
               ),
               Wrap(
                 runSpacing: 20, // Space between widgets
               children: [
               foodDetails(),
                Expanded(child: nutritionDetails()),
+               
                 ],
                 ),
             ],
@@ -155,109 +156,91 @@ String getCurrentUserId() {
                 ),
                 const Spacer(),
                 NotifyIcon(
-                  icon: Iconsax.notification,
-                  pressed: () {},
-                ),
-                
+  icon: provider.isExist(widget.documentSnapshot)
+      ? Iconsax.heart5
+      : Iconsax.heart,
+  color: provider.isExist(widget.documentSnapshot) ? deepPurple : black,
+  pressed: () {
+    provider.toggleFavorite(widget.documentSnapshot);
+  },
+),
+  
               ],
             ),
           ),
-        ],
+           bottomButtons(context),
+          
+        ], 
+        
       ),
     );
   }
 
-  FloatingActionButton bottumButtonAndIcon(FavoriteProvider provider) {
-    return FloatingActionButton.extended(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      onPressed: () {},
-      label: Row(
-        children: [
-          // Food Rate (Add this before "Taste It!!!" button)
-Row(
-  children: [
-    Icon(Iconsax.tag, color: Colors.orange.shade700, size: 20), // Price Icon
-    const SizedBox(width: 4),
-    Text(
-      "₹${(widget.documentSnapshot['rate']*quantity).toStringAsFixed(2)}",
-      
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Colors.deepPurple,
-      ),
-    ),
-  ],
-),
-const SizedBox(width: 12), // Space before button
-   ElevatedButton(
-  onPressed: () {
-    // Add the item to global cart list
-    cartItems.add({
-      'name': widget.documentSnapshot['name'],
-      'calories': widget.documentSnapshot['cal'],
-      'quantity': quantity,
-      'price': widget.documentSnapshot['rate'],
-      'image': widget.documentSnapshot['image'],
-    });
-saveCart();
-    // Show message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Added to Cart")),
-    );
-  },
-  child: const Text("Add to Cart"),
-),
-
-
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: deepPurple,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-              foregroundColor: white,
-            ),
-            onPressed: () {
-              FlutterArPlugin.launchARView(
-                modelUrl: widget.documentSnapshot['model_url'],
-                imageUrl:
-                    "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Furniture%2Fqr.jpeg?alt=media&token=b39cb577-6f5e-42b6-8172-c2194da5ec27",
-                scaleFactor: 10.0, // Adjust the scale as needed
-              );
-            },
-            child: const Text(
-              "Taste it!!!",
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+  Widget bottomButtons(BuildContext context) {
+  return Positioned(
+    bottom: 50, // Adjust as needed
+    left: 20,
+    right: 20,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        /// 🛒 **Add to Cart Button**
+        ElevatedButton(
+          onPressed: () {
+            cartItems.add({
+              'name': widget.documentSnapshot['name'],
+              'calories': widget.documentSnapshot['cal'],
+              'quantity': quantity,
+              'price': widget.documentSnapshot['rate'],
+              'image': widget.documentSnapshot['image'],
+            });
+            saveCart();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Added to Cart")),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           ),
-          const SizedBox(width: 10),
-          IconButton(
-            style: IconButton.styleFrom(
-              shape: const CircleBorder(
-                side: BorderSide(color: deepPurple, width: 2),
+          child: const Icon(Icons.shopping_cart),
+        ),
+
+        /// 🔹 **View in AR Button**
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: deepPurple,
+            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+            foregroundColor: white,
+          ),
+          onPressed: () {
+            FlutterArPlugin.launchARView(
+              modelUrl: widget.documentSnapshot['model_url'],
+              imageUrl:
+                  "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Furniture%2Fqr.jpeg?alt=media&token=b39cb577-6f5e-42b6-8172-c2194da5ec27",
+              scaleFactor: 10.0, // Adjust the scale as needed
+            );
+          },
+          child: const Row(
+            mainAxisSize: MainAxisSize.min, // Adjust size to fit content
+            children: [
+              Icon(Icons.view_in_ar),
+              SizedBox(width: 8),
+              Text(
+                "Taste it!!!",
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            onPressed: () {
-              provider.toggleFavorite(widget.documentSnapshot);
-            },
-            icon: Icon(
-              provider.isExist(widget.documentSnapshot)
-                  ? Iconsax.heart5
-                  : Iconsax.heart,
-              color: provider.isExist(widget.documentSnapshot)
-                  ? deepPurple
-                  : black,
-              size: 20,
-            ),
-          )
-        ],
-      ),
-    );
-  }
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
    Widget foodDetails() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -279,7 +262,7 @@ saveCart();
                     onPressed: decrementQuantity,
                   ),
                   Text("$quantity",
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline, color: Colors.green),
                     onPressed: incrementQuantity,
@@ -289,30 +272,46 @@ saveCart();
             ],
           ),
           const SizedBox(height: 10),
+           // Rate below the food name
+        Row(
+          children: [
+            Icon(Iconsax.tag, color: Colors.orange.shade700, size: 22),
+            const SizedBox(width: 4),
+            Text(
+              "₹${(widget.documentSnapshot['rate'] * quantity).toStringAsFixed(2)}",
+              style: const TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 22),
 
           Row(
             children: [
               // Likes
-              const Icon(Icons.favorite, color: Colors.red, size: 20),
+              const Icon(Icons.favorite, color: Colors.red, size: 30),
               const SizedBox(width: 5),
               Text("${widget.documentSnapshot['likes']} Likes",
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
               const Spacer(),
 
               // Calories (Updated)
-              const Icon(Icons.local_fire_department, color: Colors.red, size: 20),
+              const Icon(Icons.local_fire_department, color: Colors.red, size: 30),
               const SizedBox(width: 5),
               Text("${(baseCalories * quantity).toStringAsFixed(2)} kcal",
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
               const Spacer(),
 
             // Quantity (Handled as a Map)
-            const Icon(Icons.restaurant, color: Colors.green, size: 20),
+            const Icon(Icons.restaurant, color: Colors.green, size: 30),
             const SizedBox(width: 5),
             Text("${(baseQuantity * quantity)} ${widget.documentSnapshot['quantity']['unit']}",
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
                   
             ],
@@ -323,38 +322,57 @@ saveCart();
   }
 
   Widget nutritionDetails() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          nutritionCard("Proteins", formatNumber(nutrients['protein']), Icons.science_outlined),
-          nutritionCard("Carbs", formatNumber(nutrients['carbs']), Icons.bakery_dining_outlined),
-          nutritionCard("Fats", formatNumber(nutrients['fats']), Icons.opacity),
-          nutritionCard("Fiber", formatNumber(nutrients['fiber']), Icons.grass),
-        ],
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+    child: Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(child: nutritionCard("Proteins", formatNumber(nutrients['protein']), Icons.science_outlined)),
+            Expanded(child: nutritionCard("Carbs", formatNumber(nutrients['carbs']), Icons.bakery_dining_outlined)),
+          ],
+        ),
+        const SizedBox(height: 35),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(child: nutritionCard("Fats", formatNumber(nutrients['fats']), Icons.opacity)),
+            Expanded(child: nutritionCard("Fiber", formatNumber(nutrients['fiber']), Icons.grass)),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+Widget nutritionCard(String title, String value, IconData icon) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Icon(icon, size: 28, color: Colors.black),  // Black icon
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(
+          "$title: $value",
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16,color: gray800),
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
-    );
-  }
+    ],
+  );
+}
+
+
 
   String formatNumber(dynamic value) {
     if (value is num) {
-      return value.toStringAsFixed(2) + " g"; // Format to 2 decimal places
+      return "${value.toStringAsFixed(2)} g"; // Format to 2 decimal places
     }
     return "0.00 g"; // Default if the value is null or not a number
   }
 
-  Widget nutritionCard(String title, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, size: 24, color: Colors.grey.shade700),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 2),
-        Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
-    );
-  }
+  
 
 }
 
