@@ -1,8 +1,11 @@
-// ignore_for_file: prefer_const_constructors
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodview/screens/favorite_screen.dart';
+import 'package:foodview/screens/profile_screens/language_selection_page.dart';
 import 'package:foodview/screens/profile_screens/order_history_screen.dart';
+import 'package:foodview/translation/trans_text.dart';
+
 
 class ProfilePage extends StatelessWidget {
   
@@ -13,7 +16,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: const TransText("Profile"),
         backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -25,7 +28,7 @@ class ProfilePage extends StatelessWidget {
             _buildSectionTitle("Order History"),
             ListTile(
               leading: const Icon(Icons.receipt_long, color: Colors.black),
-              title: const Text("View Orders"),
+              title: const TransText("View Orders"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               onTap: () {
                  Navigator.push(
@@ -38,10 +41,13 @@ class ProfilePage extends StatelessWidget {
             _buildSectionTitle("Favorites & Preferences"),
             ListTile(
               leading: const Icon(Icons.favorite, color: Colors.black),
-              title: const Text("Favorite Dishes"),
+              title: const TransText("Favorite Dishes"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               onTap: () {
-                // Navigate to favorite dishes
+                 Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FavoriteScreen())
+    );
               },
             ),
             
@@ -50,7 +56,7 @@ class ProfilePage extends StatelessWidget {
             
             ListTile(
               leading: const Icon(Icons.credit_card, color: Colors.black),
-              title: const Text("Payment Methods"),
+              title: const TransText("Payment Methods"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               onTap: () {
                 // Navigate to saved payment methods
@@ -58,7 +64,7 @@ class ProfilePage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.local_offer, color: Colors.black),
-              title: const Text("Coupons & Discounts"),
+              title: const TransText("Coupons & Discounts"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               onTap: () {
                 // Navigate to coupons
@@ -68,7 +74,7 @@ class ProfilePage extends StatelessWidget {
             _buildSectionTitle("Settings & Notifications"),
             ListTile(
               leading: const Icon(Icons.notifications, color: Colors.black),
-              title: const Text("Notification Settings"),
+              title: const TransText("Notification Settings"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               onTap: () {
                 // Navigate to notification settings
@@ -76,25 +82,23 @@ class ProfilePage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.language, color: Colors.black),
-              title: const Text("Language Preferences"),
+              title: const TransText("Language Preferences"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               onTap: () {
-                // Navigate to language preferences
+                Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LanguageSelectionPage(), // ✅ your language picker page
+      ),
+    );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.dark_mode, color: Colors.black),
-              title: const Text("Dark Mode"),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-              onTap: () {
-                // Toggle dark mode
-              },
-            ),
+
 
             _buildSectionTitle("Support"),
             ListTile(
               leading: const Icon(Icons.help, color: Colors.black),
-              title: const Text("Help & Support"),
+              title: const TransText("Help & Support"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               onTap: () {
                 // Navigate to help & support
@@ -102,7 +106,7 @@ class ProfilePage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.feedback, color: Colors.black),
-              title: const Text("Give Feedback"),
+              title: const TransText("Give Feedback"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               onTap: () {
                 // Navigate to feedback form
@@ -112,7 +116,7 @@ class ProfilePage extends StatelessWidget {
             _buildSectionTitle("Account"),
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.black),
-              title: const Text("Logout"),
+              title: const TransText("Logout"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               onTap: () {
                 // Handle logout
@@ -120,7 +124,7 @@ class ProfilePage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text(
+              title: const TransText(
                 "Delete Account",
                 style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
               ),
@@ -155,11 +159,11 @@ class ProfilePage extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              const TransText(
                 "John Doe",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              Text("johndoe@example.com", style: TextStyle(color: Colors.grey[700])),
+              TransText("johndoe@example.com", style: TextStyle(color: Colors.grey[700])),
             ],
           ),
         ],
@@ -170,7 +174,7 @@ class ProfilePage extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Text(
+      child: TransText(
         title,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
       ),

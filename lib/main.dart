@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:foodview/provider/auth_provider.dart';
 import 'package:foodview/provider/favorite_provider.dart';
 import 'package:foodview/screens/welcome_screen.dart';
+import 'package:foodview/translation/language_service.dart';
+import 'package:foodview/translation/trans_text.dart';  
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
@@ -11,6 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+   await LanguageService().loadLanguage(); // ✅ Load saved language
   runApp(const MyApp());
 }
 

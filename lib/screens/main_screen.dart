@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foodview/screens/CartScreen.dart';
 import 'package:foodview/screens/app_home_screen.dart';

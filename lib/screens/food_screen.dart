@@ -322,46 +322,35 @@ String getCurrentUserId() {
   }
 
   Widget nutritionDetails() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-    child: Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(child: nutritionCard("Proteins", formatNumber(nutrients['protein']), Icons.science_outlined)),
-            Expanded(child: nutritionCard("Carbs", formatNumber(nutrients['carbs']), Icons.bakery_dining_outlined)),
-          ],
-        ),
-        const SizedBox(height: 35),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(child: nutritionCard("Fats", formatNumber(nutrients['fats']), Icons.opacity)),
-            Expanded(child: nutritionCard("Fiber", formatNumber(nutrients['fiber']), Icons.grass)),
-          ],
-        ),
-      ],
-    ),
-  );
-}
-
-Widget nutritionCard(String title, String value, IconData icon) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      Icon(icon, size: 28, color: Colors.black),  // Black icon
-      const SizedBox(width: 8),
-      Expanded(
-        child: Text(
-          "$title: $value",
-          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16,color: gray800),
-          overflow: TextOverflow.ellipsis,
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          nutritionCard("Proteins", formatNumber(nutrients['protein']), Icons.science_outlined),
+          nutritionCard("Carbs", formatNumber(nutrients['carbs']), Icons.bakery_dining_outlined),
+          nutritionCard("Fats", formatNumber(nutrients['fats']), Icons.opacity),
+          nutritionCard("Fiber", formatNumber(nutrients['fiber']), Icons.grass),
+        ],
       ),
-    ],
-  );
-}
+    );
+  }
+
+  
+
+  Widget nutritionCard(String title, String value, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, size: 24, color: Colors.grey.shade700),
+        const SizedBox(height: 4),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 2),
+        Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      ],
+    );
+  }
+
+
 
 
 
