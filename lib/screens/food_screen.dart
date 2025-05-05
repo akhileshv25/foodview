@@ -10,7 +10,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:foodview/utils/cart_items.dart'; // Import global cart
 
-
 class FoodScreen extends StatefulWidget {
   final DocumentSnapshot<Object?> documentSnapshot;
   const FoodScreen({super.key, required this.documentSnapshot});
@@ -21,69 +20,67 @@ class FoodScreen extends StatefulWidget {
 
 class _FoodScreenState extends State<FoodScreen> {
   bool _isLoading = true;
-   late int quantity;
+  late int quantity;
   late String quantityUnit;
   late Map<String, dynamic> nutrients;
   late double baseCalories;
   late int baseQuantity;
   final OrderService orderService = OrderService();
 
-  // Simulate model loading
   Future<void> _loadModel() async {
-    await Future.delayed(const Duration(seconds: 3)); // Simulate delay
+    await Future.delayed(const Duration(seconds: 3));
     setState(() {
-      _isLoading = false; // Model is loaded
+      _isLoading = false;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _loadModel(); // Start loading the model on init
-    nutrients = Map<String, dynamic>.from(widget.documentSnapshot['nutrients']);
-    quantityUnit = widget.documentSnapshot['quantity']['unit'];
+    _loadModel();
     quantity = 1;
-    baseQuantity=widget.documentSnapshot['quantity']['value'];
-    baseCalories = double.tryParse(widget.documentSnapshot['cal']) ?? 0;
+    quantityUnit = widget.documentSnapshot['quantity']?['unit'] ?? "g";
+    baseQuantity = widget.documentSnapshot['quantity']?['value'] ?? 1;
+    baseCalories = double.tryParse(widget.documentSnapshot['cal']?.toString() ?? "0") ?? 0;
+
+    nutrients = {
+      'protein': double.tryParse(widget.documentSnapshot['nutrients']?['protein']?.toString() ?? "0") ?? 0,
+      'carbs': double.tryParse(widget.documentSnapshot['nutrients']?['carbs']?.toString() ?? "0") ?? 0,
+      'fats': double.tryParse(widget.documentSnapshot['nutrients']?['fats']?.toString() ?? "0") ?? 0,
+      'fiber': double.tryParse(widget.documentSnapshot['nutrients']?['fiber']?.toString() ?? "0") ?? 0,
+    };
   }
-String getCurrentUserId() {
-  return FirebaseAuth.instance.currentUser?.uid ?? "";
-}
-  // Calculate the updated nutrient values based on quantity
+
   void updateNutrients() {
     setState(() {
-      double factor = quantity.toDouble(); // Direct multiplication 
-
-      nutrients['protein'] = (double.tryParse(widget.documentSnapshot['nutrients']['protein'].toString()) ?? 0) * factor;
-      nutrients['carbs'] = (double.tryParse(widget.documentSnapshot['nutrients']['carbs'].toString()) ?? 0) * factor;
-      nutrients['fats'] = (double.tryParse(widget.documentSnapshot['nutrients']['fats'].toString()) ?? 0) * factor;
-      nutrients['fiber'] = (double.tryParse(widget.documentSnapshot['nutrients']['fiber'].toString()) ?? 0) * factor;
+      final factor = quantity.toDouble();
+      nutrients.updateAll((key, value) =>
+          double.tryParse(widget.documentSnapshot['nutrients']?[key]?.toString() ?? "0")! * factor);
     });
   }
 
-
-
   void incrementQuantity() {
     setState(() {
-      quantity += 1; // Increment by the base value
+      quantity += 1;
       updateNutrients();
     });
   }
 
   void decrementQuantity() {
     setState(() {
-      if (quantity > 1) {
-        quantity -= 1; // Decrease by the base value
-      }
+      if (quantity > 1) quantity -= 1;
       updateNutrients();
     });
   }
+
+  String getCurrentUserId() {
+    return FirebaseAuth.instance.currentUser?.uid ?? "";
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = FavoriteProvider.of(context);
-
     return Scaffold(
-      
       backgroundColor: white,
       body: Stack(
         children: [
@@ -96,18 +93,16 @@ String getCurrentUserId() {
                     height: MediaQuery.of(context).size.height / 2.1,
                     child: ModelViewer(
                       backgroundColor: gray400,
-                      src: widget.documentSnapshot['model_url'],
+                      src: widget.documentSnapshot['model_url'] ?? '',
+                      iosSrc: widget.documentSnapshot['ios_model_url'] ?? '',
                       alt: 'A 3D food model',
                       ar: false,
                       autoRotate: true,
-                      iosSrc: widget.documentSnapshot['ios_model_url'],
                       disableZoom: false,
                       debugLogging: true,
-                      loading: Loading.eager, // Load model immediately
+                      loading: Loading.eager,
                     ),
                   ),
-
-                  // Show loader while the model is loading
                   if (_isLoading)
                     const Positioned(
                       child: Column(
@@ -130,16 +125,9 @@ String getCurrentUserId() {
                       ),
                     ),
                 ],
-                
               ),
-              Wrap(
-                runSpacing: 20, // Space between widgets
-              children: [
               foodDetails(),
-               Expanded(child: nutritionDetails()),
-               
-                ],
-                ),
+              nutritionDetails(),
             ],
           ),
           Positioned(
@@ -156,103 +144,98 @@ String getCurrentUserId() {
                 ),
                 const Spacer(),
                 NotifyIcon(
-  icon: provider.isExist(widget.documentSnapshot)
-      ? Iconsax.heart5
-      : Iconsax.heart,
-  color: provider.isExist(widget.documentSnapshot) ? deepPurple : black,
-  pressed: () {
-    provider.toggleFavorite(widget.documentSnapshot);
-  },
-),
-  
+                  icon: provider.isExist(widget.documentSnapshot)
+                      ? Iconsax.heart5
+                      : Iconsax.heart,
+                  color: provider.isExist(widget.documentSnapshot) ? deepPurple : black,
+                  pressed: () {
+                    provider.toggleFavorite(widget.documentSnapshot);
+                  },
+                ),
               ],
             ),
           ),
-           bottomButtons(context),
-          
-        ], 
-        
+          bottomButtons(context),
+        ],
       ),
     );
   }
 
   Widget bottomButtons(BuildContext context) {
-  return Positioned(
-    bottom: 50, // Adjust as needed
-    left: 20,
-    right: 20,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        /// 🛒 **Add to Cart Button**
-        ElevatedButton(
-          onPressed: () {
-            cartItems.add({
-              'name': widget.documentSnapshot['name'],
-              'calories': widget.documentSnapshot['cal'],
-              'quantity': quantity,
-              'price': widget.documentSnapshot['rate'],
-              'image': widget.documentSnapshot['image'],
-            });
-            saveCart();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Added to Cart")),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+    return Positioned(
+      bottom: 50,
+      left: 20,
+      right: 20,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              cartItems.add({
+                'name': widget.documentSnapshot['name'] ?? '',
+                'calories': widget.documentSnapshot['cal'] ?? '',
+                'quantity': quantity,
+                'price': widget.documentSnapshot['rate'] ?? 0,
+                'image': widget.documentSnapshot['image'] ?? '',
+              });
+              saveCart();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Added to Cart")),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+            child: const Icon(Icons.shopping_cart),
           ),
-          child: const Icon(Icons.shopping_cart),
-        ),
-
-        /// 🔹 **View in AR Button**
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: deepPurple,
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
-            foregroundColor: white,
-          ),
-          onPressed: () {
-            FlutterArPlugin.launchARView(
-              modelUrl: widget.documentSnapshot['model_url'],
-              imageUrl:
-                  "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Furniture%2Fqr.jpeg?alt=media&token=b39cb577-6f5e-42b6-8172-c2194da5ec27",
-              scaleFactor: 10.0, // Adjust the scale as needed
-            );
-          },
-          child: const Row(
-            mainAxisSize: MainAxisSize.min, // Adjust size to fit content
-            children: [
-              Icon(Icons.view_in_ar),
-              SizedBox(width: 8),
-              Text(
-                "Taste it!!!",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: deepPurple,
+              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+              foregroundColor: white,
+            ),
+            onPressed: () {
+              try {
+                FlutterArPlugin.launchARView(
+                  modelUrl: widget.documentSnapshot['model_url'] ?? '',
+                  imageUrl:
+                      "https://firebasestorage.googleapis.com/v0/b/arsample-595f2.appspot.com/o/Furniture%2Fqr.jpeg?alt=media&token=b39cb577-6f5e-42b6-8172-c2194da5ec27",
+                  scaleFactor: 10.0,
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("AR view error: $e")),
+                );
+              }
+            },
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.view_in_ar),
+                SizedBox(width: 8),
+                Text(
+                  "Taste it!!!",
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
-   Widget foodDetails() {
+  Widget foodDetails() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Food Name with Increment/Decrement Buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                widget.documentSnapshot['name'],
+                widget.documentSnapshot['name'] ?? '',
                 style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               Row(
@@ -261,8 +244,10 @@ String getCurrentUserId() {
                     icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
                     onPressed: decrementQuantity,
                   ),
-                  Text("$quantity",
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(
+                    "$quantity",
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline, color: Colors.green),
                     onPressed: incrementQuantity,
@@ -272,48 +257,39 @@ String getCurrentUserId() {
             ],
           ),
           const SizedBox(height: 10),
-           // Rate below the food name
-        Row(
-          children: [
-            Icon(Iconsax.tag, color: Colors.orange.shade700, size: 22),
-            const SizedBox(width: 4),
-            Text(
-              "₹${(widget.documentSnapshot['rate'] * quantity).toStringAsFixed(2)}",
-              style: const TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 22),
-
           Row(
             children: [
-              // Likes
+              Icon(Iconsax.tag, color: Colors.orange.shade700, size: 22),
+              const SizedBox(width: 4),
+              Text(
+                "₹${((widget.documentSnapshot['rate'] ?? 0) * quantity).toStringAsFixed(2)}",
+                style: const TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 22),
+          Row(
+            children: [
               const Icon(Icons.favorite, color: Colors.red, size: 30),
               const SizedBox(width: 5),
-              Text("${widget.documentSnapshot['likes']} Likes",
+              Text("${widget.documentSnapshot['likes'] ?? 0} Likes",
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-
               const Spacer(),
-
-              // Calories (Updated)
               const Icon(Icons.local_fire_department, color: Colors.red, size: 30),
               const SizedBox(width: 5),
               Text("${(baseCalories * quantity).toStringAsFixed(2)} kcal",
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-
               const Spacer(),
-
-            // Quantity (Handled as a Map)
-            const Icon(Icons.restaurant, color: Colors.green, size: 30),
-            const SizedBox(width: 5),
-            Text("${(baseQuantity * quantity)} ${widget.documentSnapshot['quantity']['unit']}",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-
-                  
+              const Icon(Icons.restaurant, color: Colors.green, size: 30),
+              const SizedBox(width: 5),
+              Text(
+                "${(baseQuantity * quantity)} $quantityUnit",
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ],
@@ -336,8 +312,6 @@ String getCurrentUserId() {
     );
   }
 
-  
-
   Widget nutritionCard(String title, String value, IconData icon) {
     return Column(
       children: [
@@ -350,18 +324,10 @@ String getCurrentUserId() {
     );
   }
 
-
-
-
-
   String formatNumber(dynamic value) {
     if (value is num) {
-      return "${value.toStringAsFixed(2)} g"; // Format to 2 decimal places
+      return "${value.toStringAsFixed(2)} g";
     }
-    return "0.00 g"; // Default if the value is null or not a number
+    return "0.00 g";
   }
-
-  
-
 }
-
